@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room One</title>
+    <style>
+        body{
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50vh;
+            width:50vw;
+            border: 1px solid #cecece;
+        }
+        .input-container {
+            display: flex;
+            &button {
+                padding: 0 4px;
+            }
+            &input['text'] {
+                flex
+            }
+        }
+        button {
+            
+
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to room 1</h1>
+    <div class="container">
+
+    </div>
+    <div class="input-container">
+        <input type="text" name="message" id="message-field">
+        <button id="send-button">Send</button>
+    </div>
+    <script>
+        const socket = io('localhost:4040');
+        const roomId = 'one'
+        socket.on('connect', () => {
+            console.log('Connected to the server');
+            console.log('Room one is connected');
+        });
+
+        function autoJoin(){
+            socket.emit('room:join',roomId)
+        }
+
+        document.onload = autoJoin()
+    </script>
+</body>
+</html>
