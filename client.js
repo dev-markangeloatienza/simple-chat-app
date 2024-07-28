@@ -1,28 +1,42 @@
 const socket = io('localhost:4040');
-const messageContainer = document.getElementById('message-container')
-const messageField = document.getElementById('message-field')
-const sendMessage = document.getElementById('send')
+const messageContainer = document.querySelectorAll('.message-container')
+const messageField = document.querySelectorAll('.message-field')
+const sendMessage = document.querySelectorAll('.send-button')
 const roomBtns = document.querySelectorAll(".room-button")
-let roomId
-let broadcast = "m1"
+
+const messageContainerFilter = (roomId) => {
+    return Object.values(messageContainer).filter(item => item.dataset.roomId === roomId)
+}
+
+const inputMessageFilter = (roomId) => {
+    return Object.values(messageField).filter(item => item.dataset.roomId === roomId)
+}
+
+
 socket.on('connect',()=>{
     console.log("Connection established to server with ID %s",socket.id)
 })
 
 roomBtns.forEach(element => {
     element.addEventListener('click',()=>{
-        roomId = element.dataset.roomId
+        let roomId = element.dataset.roomId
+        element.textContent = "Joined"
+        element.disabled= true
         socket.emit('room:join',roomId)
     })
 });
 
-sendMessage.addEventListener('click', ()=>{
-    let message = messageField.value
-    socket.emit('room:message',{
-        roomId,
-        message
+sendMessage.forEach(element=> {
+    element.addEventListener('click', (e)=>{
+        e.preventDefault()
+        let roomId = element.dataset.roomId
+        let message = inputMessageFilter(roomId)
+        socket.emit('room:message',{
+            roomId,
+            message: message[0].value
+        })
+        message[0].value= ''
     })
-    messageField.value= ''
 })
 
 socket.on('room:connected',(msg)=>{
@@ -30,9 +44,11 @@ socket.on('room:connected',(msg)=>{
 })
 
 socket.on('room:message',(data)=> {
-    console.log("ROOM DATA: ", data)
-    console.log(`Message from room ${data.sender}: ${data.message}`)
-    messageContainer.innerHTML += `<p>${data.sender}: ${data.message}</p>`
+
+    let roomId = data.roomId
+    let msgContainer = messageContainerFilter(roomId)
+
+    msgContainer[0].innerHTML += `<p>${data.sender}: ${data.message}</p>`
 })
 
 let count = 0

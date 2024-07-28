@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
 
         io.in(roomId).emit('room:message',{
             message,
+            roomId,
             sender: socket.id
         })
         // socket.broadcast.to(roomId).emit('room:message',{
